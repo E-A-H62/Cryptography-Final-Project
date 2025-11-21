@@ -25,39 +25,54 @@ This project implements a secure communication system between two parties using 
 
 ### Usage
 
-1. **Generate RSA key pairs for both parties**
-   ```bash
-   python generate_keys.py
+The application includes an interactive menu system that provides an interface for all operations. First run:
+```bash
+   python communication_system.py
    ```
-   This will create the following files:
-   - `sender_private.pem` - Sender's private RSA key
-   - `sender_public.pem` - Sender's public RSA key
-   - `receiver_private.pem` - Receiver's private RSA key
-   - `receiver_public.pem` - Receiver's public RSA key
+Then choose from the provided options in the menu to use the communication system.
+1. **Send a message**
+   - Select option `1` to send a message and enter your message when prompted
+   - The system will:
+     - Save your message to `message.txt`
+     - Encrypt the message using AES
+     - Encrypt the AES key using the receiver's RSA public key
+     - Generate a MAC (HMAC-SHA256) for authentication
+     - Save all data to `transmitted_data.txt`
 
-2. **Prepare your message**
-   Create a text file containing the message you want to send (e.g., `message.txt`)
+2. **Receive and decrypt the message**
+   - Select option `2` to receive a message
+   - This will:
+     - Decrypt the AES key using the receiver's private RSA key
+     - Decrypt the message using the AES key
+     - Verify the MAC
+     - Display the decrypted message and MAC verification status
 
-3. **Send the message**
-   ```bash
-   python sender.py
-   ```
-   When prompted, enter the filename of your message file (e.g., `message.txt`).
-   This will create `transmitted_data.txt` containing:
-   - Encrypted message (AES-encrypted)
-   - Encrypted AES key (RSA-encrypted)
-   - MAC (HMAC-SHA256)
-   - Nonce and tag (for AES EAX mode)
+3. **Generate RSA key pairs for both parties**
+   - Select option `3` to generate new RSA key pairs. This will create:
+      - `sender_private.pem` - Sender's private RSA key
+      - `sender_public.pem` - Sender's public RSA key
+      - `receiver_private.pem` - Receiver's private RSA key
+      - `receiver_public.pem` - Receiver's public RSA key
 
-4. **Receive and decrypt the message**
-   ```bash
-   python receiver.py
-   ```
-   The receiver will:
-   - Decrypt the AES key using their private RSA key
-   - Decrypt the message using the AES key
-   - Verify the MAC
-   - Display the decrypted message and MAC verification status
+4. **Exit the communication system**
+   - Select option `4` to exit the program
+
+
+## Project Structure
+- `communication_system.py` - Main interactive menu system that provides a unified interface for sending, receiving, and key generation
+- `sender.py` - Contains the `sending()` function that encrypts messages using AES and RSA
+- `receiver.py` - Contains the `receiving()` function that decrypts messages and verifies MAC
+- `generate_keys.py` - Contains the `generate_keys()` function that creates RSA key pairs for both parties
+- `message.txt` - Text file containing the message to be sent (created automatically by the interactive system)
+- `transmitted_data.txt` - Binary file containing encrypted message, encrypted AES key, MAC, nonce, and tag (serialized using pickle)
+- `sender_private.pem` / `sender_public.pem` - Sender's RSA key pair
+- `receiver_private.pem` / `receiver_public.pem` - Receiver's RSA key pair
+
+## Technical Details
+- **Encryption**: AES-128 in EAX mode (provides authenticated encryption)
+- **Key Exchange**: RSA-2048 with PKCS1_OAEP padding
+- **Message Authentication**: HMAC-SHA256
+- **Data Serialization**: Python pickle (for preserving binary data in transmitted_data.txt)
 
 ## Requirements:
 The requirements of the system include:
