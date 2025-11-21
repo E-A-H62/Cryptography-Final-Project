@@ -4,3 +4,4 @@ sender_private.pem
 sender_public.pem
 transmitted_data.txt
 venv/
+__pycache__/
